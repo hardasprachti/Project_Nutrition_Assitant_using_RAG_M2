@@ -1,0 +1,56 @@
+[project]
+name = "nutrition-assistant-backend"
+version = "0.1.0"
+description = "AI Nutrition Assistant: RAG-based dietary guidance backend"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.142.2",
+    "uvicorn[standard]==0.54.0",
+    "pydantic==2.13.5",
+    "pydantic-settings==2.15.0",
+    "sqlalchemy==2.1.1",
+    "alembic==1.20.0",
+    "psycopg[binary]==3.3.6",
+    "pgvector==0.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "httpx==0.28.1",
+    "ruff==0.16.10",
+    "mypy==2.3.1",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*", "ingestion*", "evaluation*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Alembic revisions are machine-generated and kept as generated.
+extend-exclude = ["app/db/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["app", "tests"]
+exclude = ["app/db/migrations/versions/"]
+
+[[tool.mypy.overrides]]
+module = ["pgvector.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: needs a running Postgres with pgvector (skipped when DATABASE_URL is unreachable)",
+]
